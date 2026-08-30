@@ -73,6 +73,26 @@ fi
 chmod +x "$PAYLOAD"/jukebox "$PAYLOAD"/iniciar.sh "$PAYLOAD"/servico-jukebox "$PAYLOAD"/*.py 2>/dev/null || true
 [ -f "$PAYLOAD/vendor/yt-dlp" ] && chmod +x "$PAYLOAD/vendor/yt-dlp"
 
+# Python(s) via AppImage + venv (/userdata/system/.dev/apps/python nesta
+# maquina) -- separado do jukebox (que continua no python3 do sistema, ver
+# iniciar.sh), e' pra bibliotecas futuras que precisem de um Python que nao
+# seja o 3.11 de fabrica do Batocera. So empacota se a pasta existir aqui;
+# o "py" solto na raiz dela e' lixo sem uso (nao e' invocado por nada),
+# fica de fora de proposito.
+PYTHON_APPS_SRC=/userdata/system/.dev/apps/python
+if [ -d "$PYTHON_APPS_SRC" ]; then
+    mkdir -p "$PAYLOAD/python-apps"
+    cp -r "$PYTHON_APPS_SRC"/*.AppImage "$PAYLOAD/python-apps/" 2>/dev/null || true
+    if [ -d "$PYTHON_APPS_SRC/venv" ]; then
+        cp -r "$PYTHON_APPS_SRC/venv" "$PAYLOAD/python-apps/"
+        find "$PAYLOAD/python-apps/venv" -name "__pycache__" -type d -exec rm -rf {} + 2>/dev/null || true
+    fi
+    chmod +x "$PAYLOAD"/python-apps/*.AppImage 2>/dev/null || true
+    log "python-apps incluido ($(du -sh "$PAYLOAD/python-apps" | cut -f1))"
+else
+    log "aviso: $PYTHON_APPS_SRC nao existe neste sistema -- pacote vai sem os AppImages do Python"
+fi
+
 # ----------------------------------------------------------------------
 # Squashfs
 # ----------------------------------------------------------------------
@@ -87,6 +107,6 @@ log "pronto:"
 ls -lh "$DIST_DIR"
 log ""
 log "sobe jukebox.squashfs, instalador.sh (e SHA256SUMS, opcional) como"
-log "assets de uma release no GitHub. Antes de publicar, edite a URL"
-log "padrao (URL_SQUASHFS) no topo de instalador.sh para apontar pra essa"
-log "release."
+log "assets de uma release no GitHub. URL_SQUASHFS no topo de instalador.sh"
+log "ja aponta pra github.com/StickArcade/Juckbox -- so mexer se o"
+log "repositorio mudar de nome/dono."

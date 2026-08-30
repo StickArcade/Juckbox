@@ -62,13 +62,13 @@ carregadas pelo programa.
 Numa imagem nova do Batocera, com internet:
 
 ```sh
-wget -O instalador.sh https://github.com/<usuario>/<repo>/releases/latest/download/instalador.sh
+wget -O instalador.sh https://github.com/StickArcade/Juckbox/releases/latest/download/instalador.sh
 sh instalador.sh
 ```
 
 O `instalador.sh` baixa o `jukebox.squashfs` da mesma release (variável
-`URL_SQUASHFS` no topo do script — ajustar para a release de verdade antes
-de publicar), extrai em `/userdata/system/.dev/apps/Juckbox` e resolve
+`URL_SQUASHFS` no topo do script, já apontando para
+`github.com/StickArcade/Juckbox`), extrai em `/userdata/system/.dev/apps/Juckbox` e resolve
 sozinho todo o resto: `.bashrc`, `PATH` para `/userdata/system/.local/bin`,
 o binário do `yt-dlp` (embutido no squashfs, não depende de internet essa
 parte), e o desvio no `/usr/bin/emulationstation-standalone` para chamar
@@ -341,8 +341,12 @@ Dois scripts na raiz, pensados para uma release no GitHub:
   (cópia) + `dist/SHA256SUMS`. O squashfs leva só o que roda em produção —
   os módulos `.py`, `jukebox`, `iniciar.sh`, `servico-jukebox`,
   `emulationstation-standalone` (cópia de referência), `assets/`,
-  `themes/`, `ui/`, `LEIA-ME.md` e o binário standalone do `yt-dlp`
-  (`vendor/yt-dlp`, copiado do que estiver no `PATH` de quem empacota).
+  `themes/`, `ui/`, `LEIA-ME.md`, o binário standalone do `yt-dlp`
+  (`vendor/yt-dlp`, copiado do que estiver no `PATH` de quem empacota) e o(s)
+  Python via AppImage + venv de `/userdata/system/.dev/apps/python`, se
+  existirem nesta máquina (`python-apps/`, para bibliotecas futuras que
+  precisem de um Python diferente do 3.11 de fábrica do Batocera — o
+  jukebox em si nunca usa isso, continua rodando no `python3` do sistema).
   **Nunca** `musicas/`, `musicas.bkp/`, `.dev/`, `__pycache__/`, `*.bak*`,
   `config.dev.json` nem `testar.sh` — não é código de produção nem faz
   sentido numa máquina nova. O `config.json` empacotado tem `senha_sal` e
@@ -354,20 +358,25 @@ Dois scripts na raiz, pensados para uma release no GitHub:
   `URL_SQUASHFS` no topo do script) ou usa um que já esteja do lado dele,
   extrai, copia o código/assets para `/userdata/system/.dev/apps/Juckbox`
   **sem sobrescrever `config.json` nem `musicas/` já existentes**, instala
-  o `yt-dlp` embutido em `/userdata/system/.local/bin`, injeta um bloco
-  marcado no `.bashrc` (PATH + atalhos `jk`/`juckebox`/`jklog`/`jkcred`) e
-  desvia o `/usr/bin/emulationstation-standalone` real do sistema para
-  chamar o `iniciar.sh` do jukebox (guardando o original em
+  o `yt-dlp` embutido em `/userdata/system/.local/bin`, instala o(s) Python
+  via AppImage em `/userdata/system/.dev/apps/python` (`PYTHON_APPS_DIR` —
+  só na primeira vez, nunca mexe se a pasta já existir, para não perder
+  pacotes já instalados nessa venv), injeta um bloco marcado no `.bashrc`
+  (PATH + atalhos `jk`/`juckebox`/`jklog`/`jkcred`/`activate`) e desvia o
+  `/usr/bin/emulationstation-standalone` real do sistema para chamar o
+  `iniciar.sh` do jukebox (guardando o original em
   `emulationstation-standalone.orig` antes de mexer). É seguro rodar de
   novo: cada passo confere se já foi feito antes de repetir.
 
-Publicar a release: gerar os arquivos com `empacotar.sh`, editar a URL
-padrão no topo de `instalador.sh` para apontar para a release de verdade
-(`https://github.com/<usuario>/<repo>/releases/latest/download/jukebox.squashfs`),
+Publicar a release: gerar os arquivos com `empacotar.sh` (o `URL_SQUASHFS`
+padrão de `instalador.sh` já aponta para
+`https://github.com/StickArcade/Juckbox/releases/latest/download/jukebox.squashfs`)
 e subir `jukebox.squashfs` + `instalador.sh` (+ `SHA256SUMS`, opcional) como
-assets dessa release no GitHub. Isso é feito fora deste repositório/sessão
-— publicar uma release é uma ação visível publicamente, então fica a
-critério de quem tem acesso ao GitHub do projeto.
+assets da release no GitHub. Isso é feito fora deste repositório/sessão —
+publicar uma release é uma ação visível publicamente, então fica a critério
+de quem tem acesso ao GitHub do projeto. Se o repositório for renomeado ou
+movido para outra conta, atualizar essa URL de novo (linha `URL_SQUASHFS=`
+no topo de `instalador.sh`) e reempacotar.
 
 **`assets/generos.squashfs` não é versionado** (`.gitignore`): tem ~75MB,
 acima do limite de 25MB por arquivo do upload manual pelo site do GitHub
