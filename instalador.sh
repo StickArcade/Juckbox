@@ -199,7 +199,7 @@ PYEOF
 else
     log "aviso: $ES_STANDALONE nao encontrado -- desvio nao aplicado, precisa fazer a mao (ver LEIA-ME.md)"
 fi
-
+batocera-save-overlay 250
 log "instalacao concluida."
 log ""
 log "Antes de ligar a maquina no ponto:"
