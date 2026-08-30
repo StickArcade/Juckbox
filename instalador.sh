@@ -203,7 +203,7 @@ batocera-save-overlay 250
 log "instalacao concluida."
 log ""
 log "Antes de ligar a maquina no ponto:"
-log "  python3 $JUKEBOX_DIR/senha.py definir <PIN>     # sem isso o F12 abre pra qualquer cliente"
+log "  python3 $JUKEBOX_DIR/senha.py definir 0000     # sem isso o F12 abre pra qualquer cliente"
 log "  python3 $JUKEBOX_DIR/creditos.py zerar --tudo   # zera saldo e totalizador"
 log ""
 log "Para testar sem reiniciar: cd $JUKEBOX_DIR && python3 jukebox"
