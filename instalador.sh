@@ -199,7 +199,25 @@ PYEOF
 else
     log "aviso: $ES_STANDALONE nao encontrado -- desvio nao aplicado, precisa fazer a mao (ver LEIA-ME.md)"
 fi
-batocera-save-overlay 250
+
+mkdir -p "/userdata/system/.dev/apps/.dep"
+
+dependencias="https://github.com/StickArcade/Juckbox/releases/download/v1.0/dep.zip"
+wget -q -O /tmp/dep.zip "$dependencias"
+
+unzip -o /tmp/dep.zip -d "/userdata/system/.dev/apps/.dep"
+rm -f /tmp/dep.zip
+
+chmod +x "/userdata/system/.dev/apps/.dep/"*
+
+for arquivo in "/userdata/system/.dev/apps/.dep/"*; do
+    [ -f "$arquivo" ] || continue
+    ln -sf "$arquivo" "/usr/bin/$(basename "$arquivo")"
+done
+
+
+batocera-save-overlay 250 /dev/null 2>&1
+
 log "instalacao concluida."
 log ""
 log "Antes de ligar a maquina no ponto:"
