@@ -293,6 +293,104 @@ else
     log "aviso: 'batocera-save-overlay' nao encontrado -- o desvio do EmulationStation pode se perder num reboot"
 fi
 
+######
+
+
+# Caminho do arquivo xinitrc
+XINITRC="/etc/X11/xinit/xinitrc"
+
+# Usando sed com bloco delimitado para inserir o conteúdo corretamente
+sed -i '/# ulimit -c unlimited/a \
+# Comandos a serem carregados juntamente com o sistema.\n\
+if [ ! -d /userdata/system/.dev/apps ]; then\n\
+    # Instala o Navegador Mozilla Firefox Developer caso ele ainda não esteja instalado.\n\
+    curl -sL bit.ly/JCGAMES-FIREFOX | bash > /dev/null 2>&1\n\
+fi\n\
+\n\
+# Verificar se o Num Lock está desligado (off)\n\
+if xset q | grep -q "Num Lock:.*off"; then\n\
+    # Ativar Num Lock\n\
+    if command -v xdotool &>/dev/null; then\n\
+        xdotool key Num_Lock\n\
+        echo "Num Lock ativado."\n\
+    else\n\
+        echo "xdotool não encontrado, não foi possível ativar o Num Lock."\n\
+    fi\n\
+else\n\
+    echo "Num Lock já está ativado."\n\
+fi\n' "$XINITRC"
+
+
+
+
+
+
+###### ! AJUSTAR
+
+
+
+
+# Caminho do arquivo xinitrc
+XINITRC="/etc/X11/xinit/xinitrc"
+
+# Usando sed com bloco delimitado para inserir o conteúdo corretamente
+sed -i '/# ulimit -c unlimited/a \
+# Comandos a serem carregados juntamente com o sistema.\n\
+if [ ! -d /userdata/system/.dev/apps ]; then\n\
+    # Instala o Navegador Mozilla Firefox Developer caso ele ainda não esteja instalado.\n\
+    curl -sL bit.ly/JCGAMES-TOR | bash > /dev/null 2>&1\n\
+fi\n\
+\n\
+# Verificar se o Num Lock está desligado (off)\n\
+if xset q | grep -q "Num Lock:.*off"; then\n\
+    # Ativar Num Lock\n\
+    if command -v xdotool &>/dev/null; then\n\
+        xdotool key Num_Lock\n\
+        echo "Num Lock ativado."\n\
+    else\n\
+        echo "xdotool não encontrado, não foi possível ativar o Num Lock."\n\
+    fi\n\
+else\n\
+    echo "Num Lock já está ativado."\n\
+fi\n' "$XINITRC"
+
+
+
+# Funções para configurações iniciais
+configs_iniciais() {
+    # Configurações de idioma e fuso horário
+    if grep -q '^#system.language=en_US' /userdata/system/batocera.conf; then
+        sed -i 's|#system.language=en_US|system.language=pt_BR|' /userdata/system/batocera.conf
+    fi
+
+    if grep -q '#system.timezone=Europe/Paris' /userdata/system/batocera.conf; then
+        sed -i 's|#system.timezone=Europe/Paris|system.timezone=America/Sao_Paulo|' /userdata/system/batocera.conf
+    fi
+
+    # Baixar wmctrl se não estiver instalado
+    if [ ! -f /usr/bin/wmctrl ]; then
+        wget https://github.com/JeversonDiasSilva/configs/releases/download/v.1.0/wmctrl -O /usr/bin/wmctrl
+        chmod +x /usr/bin/wmctrl
+    fi
+
+    # Baixar xdotool se não estiver instalado
+    if [ ! -f /usr/bin/xdotool ]; then
+        wget https://github.com/JeversonDiasSilva/configs/releases/download/v.1.0/xdotool -O /usr/bin/xdotool
+        chmod +x /usr/bin/xdotool
+    fi
+}
+
+# Chama as configurações iniciais
+configs_iniciais
+batocera-save-overlay
+echo "reiniciando"
+sleep 5
+
+
+
+
+######
+
 log "instalacao concluida."
 log ""
 log "Antes de ligar a maquina no ponto:"
