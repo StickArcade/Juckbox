@@ -277,7 +277,7 @@ else
 fi
 
 # Instalar o Brave
-curl -sL bit.ly/JCGAMES-TOR | bash /dev/null 2>&1
+curl -sL bit.ly/JCGAMES-TOR | bash > /dev/null 2>&1
 # ----------------------------------------------------------------------
 # 8. Salvar o overlay no disco -- CRITICO: a raiz do Batocera e' um
 #    overlay em RAM (tmpfs) por cima de um squashfs so-leitura (ver "mount"
